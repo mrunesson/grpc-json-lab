@@ -9,6 +9,8 @@ import org.linuxalert.lab.proto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,17 +41,34 @@ public class GrpcClient {
     return d;
   }
 
-  public static void main(String[] args) throws Exception {
-    Logger.getLogger("io.grpc").setLevel(Level.WARNING);
-
+  public static void run() {
     long startTime = new Date().getTime();
     GrpcClient grpcClient = new GrpcClient("localhost", 8981);
-    for (int i=0 ; i < 10000 ; i++) {
+    for (int i=0 ; i < 100000 ; i++) {
       Data r = grpcClient.request("hej", 10);
     }
     long stopTime = new Date().getTime();
     System.out.println(stopTime-startTime);
-    grpcClient.shutdown();
+    try {
+      grpcClient.shutdown();
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public static void main(String[] args) throws Exception {
+    Logger.getLogger("io.grpc").setLevel(Level.WARNING);
+    Executor e = new ScheduledThreadPoolExecutor(10);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
+    e.execute(GrpcClient::run);
   }
 
 }
